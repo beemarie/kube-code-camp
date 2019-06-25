@@ -43,7 +43,7 @@ Source and additional reading: https://kubernetes.io/docs/reference/access-authn
 
 Create a ClusterRole as well as some bindings in order to authorize our service accounts to manage deployments. Copy and paste the following 3 commands into your CLI to create the ClusterRole and RoleBindings.
 
-```yaml
+```bash
 cat <<EOF | kubectl apply -f -
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRole
@@ -67,7 +67,7 @@ EOF
 ```
 
 
-```yaml
+```bash
 cat <<EOF | kubectl apply -f -
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -85,7 +85,7 @@ subjects:
 EOF
 ```
 
-```yaml
+```bash
 cat <<EOF | kubectl apply -f -
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
