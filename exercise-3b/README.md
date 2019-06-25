@@ -109,7 +109,7 @@ We can now define a Service object to expose the deployment to external clients.
     ports:
     - protocol: TCP
       port: 8080
-      nodePort: 30073 
+      nodePort: 30073
   ```
 
 The above configuration creates a Service resource named hello-world. A Service can be used to create a network path for incoming traffic to your running application. In this case, we are setting up a route from port 3000 on the cluster to the "http-server" port on our app, which is port 3000 per the Deployment container spec.
