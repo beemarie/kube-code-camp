@@ -1,43 +1,83 @@
-var express = require('express')
-var app = express()
-var startTime = Date.now()
+const express = require('express');
 var fs = require('fs')
 
-const ToneAnalyzerV3 = require('ibm-watson/tone-analyzer/v3');
+const app = express();
+const TextToSpeechV1 = require('watson-developer-cloud/text-to-speech/v1');
 
-var binding = JSON.parse(fs.readFileSync('/var/credentials/credentials.json'));
+// Bootstrap application settings
+require('./config/express')(app);
 
-const tone_analyzer = binding.apikey ? new ToneAnalyzerV3({
- iam_apikey: binding.apikey,
- url: binding.url,
- version: '2016-05-19'
-}) : new ToneAnalyzerV3({
- username: binding.username,
- password: binding.password,
- url: binding.url,
- version: '2016-05-19'
+const getFileExtension = (acceptQuery) => {
+  const accept = acceptQuery || '';
+  switch (accept) {
+    case 'audio/ogg;codecs=opus':
+    case 'audio/ogg;codecs=vorbis':
+      return 'ogg';
+    case 'audio/wav':
+      return 'wav';
+    case 'audio/mpeg':
+      return 'mpeg';
+    case 'audio/webm':
+      return 'webm';
+    case 'audio/flac':
+      return 'flac';
+    default:
+      return 'mp3';
+  }
+};
+let textToSpeech;
+let credentialsFile = '/var/credentials/credentials.json';
+
+if (process.env.TEXT_TO_SPEECH_IAM_APIKEY && process.env.TEXT_TO_SPEECH_IAM_APIKEY !== '') {
+  textToSpeech = new TextToSpeechV1({
+    url: process.env.TEXT_TO_SPEECH_URL || 'https://stream.watsonplatform.net/text-to-speech/api',
+    iam_apikey: process.env.TEXT_TO_SPEECH_IAM_APIKEY || '<iam_apikey>',
+    iam_url: 'https://iam.bluemix.net/identity/token',
+  });
+} else if (fs.existsSync(credentialsFile)) {
+  var binding = JSON.parse(fs.readFileSync(credentialsFile));
+  textToSpeech = new TextToSpeechV1({
+    url: binding.url,
+    iam_apikey: binding.apikey,
+    iam_url: 'https://iam.bluemix.net/identity/token',
+  });
+} else {
+  console.error("NO WATSON CREDENTIALS FOUND");
+  process.exit();
+}
+
+
+
+
+app.get('/', (req, res) => {
+  res.render('index');
 });
 
-app.get('/', function(req, res) {
- res.send('Ready to analyze Tone!')
-})
+/**
+ * Pipe the synthesize method
+ */
+app.get('/api/v1/synthesize', (req, res, next) => {
+  const transcript = textToSpeech.synthesize(req.query);
+  transcript.on('response', (response) => {
+    if (req.query.download) {
+      response.headers['content-disposition'] = `attachment; filename=transcript.${getFileExtension(req.query.accept)}`;
+    }
+  });
+  transcript.on('error', next);
+  transcript.pipe(res);
+});
 
-app.get('/healthz', function(req, res) {
- res.send('OK!')
-})
+// Return the list of voices
+app.get('/api/v1/voices', (req, res, next) => {
+  textToSpeech.voices(null, (error, voices) => {
+    if (error) {
+      return next(error);
+    }
+    return res.json(voices);
+  });
+});
 
-app.get('/analyze', function(req, res) {
- tone_analyzer.tone({ tone_input: {
-   text: req.query.text
- } }, function(err, tone) {
-   if (err) {
-     res.status(500).send(err);
-   } else {
-     res.send(JSON.stringify(tone, null, 2));
-   }
- });
-})
+// error-handler settings
+require('./config/error-handler')(app);
 
-app.listen(8081, function() {
- console.log('Sample app is listening on port 8081.')
-})
+module.exports = app;

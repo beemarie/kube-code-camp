@@ -1,0 +1,20 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: watson-text-to-speech-ingress
+  annotations:
+    # Force the use of https if the request is http
+    ingress.bluemix.net/redirect-to-https: "True"
+spec:
+  tls:
+  - hosts:
+    - watson.<Ingress Subdomain>
+    secretName: <Ingress Secret>
+  rules:
+  - host: watson.<Ingress Subdomain>
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: watson-service
+          servicePort: 8080

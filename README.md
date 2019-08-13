@@ -125,6 +125,3 @@ Kubernetes provides us with a client interface through ‘kubectl’. Kubectl co
 5. Scheduler assigns new pods to a Node based on a criteria. Scheduler makes decisions to run Pods on specific Nodes in the cluster. Scheduler modifies the model with the node information.
 6. Kubelet on a node detects a pod with an assignment to itself, and deploys the requested containers via the container runtime (e.g. Docker). Each Node watches the storage to see what pods it is assigned to run. It takes necessary actions on resource assigned to it like create/delete Pods.
 7. Kubeproxy manages network traffic for the pods – including service discovery and load-balancing. Kubeproxy is responsible for communication between Pods that want to interact.
-
-## Get Started
-To get started with the lab, go to [exercise 0](https://github.com/beemarie/kube-code-camp/tree/master/exercise-0).

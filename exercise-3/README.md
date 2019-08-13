@@ -67,7 +67,7 @@ A *replica* is how Kubernetes accomplishes scaling out a deployment. A replica i
     hello-world-562211614-zsp0j   1/1       Running   0          2m
     ```
    
-**Tip:** Another way to improve availability is to [add clusters and regions](https://cloud.ibm.com/docs/containers?topic=containers-add_workers) to your deployment, as shown in the following diagram: 
+**Tip:** The above step increases the number of replicas of your container within your cluster. Another way to improve availability is to grow your cluster by [adding nodes and regions](https://cloud.ibm.com/docs/containers?topic=containers-add_workers) to your cluster, as shown in the following diagram: 
 
 ![HA with more clusters and regions](../images/cluster_ha_roadmap.png) 
 
@@ -89,6 +89,7 @@ To update:
     ```
     ibmcloud cr build . -t $MYREGISTRY/$MYNAMESPACE/$MYPROJECT:2
     ```
+    Note that we are building the image with the same name, but different tag (2). If you run `ibmcloud cr images`, you will now see both of your images.
 
 
 1. Using `kubectl`, you can now update your deployment to use the
@@ -161,12 +162,50 @@ To update:
 1. Confirm your new code is active:
 
     ```
-    curl $PUBLICIP:$NODEPORT
+    curl $WORKER_IP:$NODEPORT
     ```
 
 You should see something like: `Hello world from hello-world-86959dc89b-hgzs8! Great job getting the second stage up and running!`
 
 Congratulations - You just updated your app with a new version!
+
+## Launch the Kubernetes Dashboard
+
+1. Go back to your clusters detail page in the IBM Cloud UI. If you don't still have this open, you can go the [clusters](https://cloud.ibm.com/kubernetes/clusters/) page and select your cluster.
+
+2. Click the Kubernetes Dashboard button.
+
+    ![](../README_images/kube-dashboard.png)
+
+
+## Explore the Kubernetes Dashboard
+
+1. In the **Workloads** tab, you can see the resources that you created. From this tab, you can continually refresh and see that the health check is working. 
+
+2. In the **Pods** section of the **Workloads** tab you can see how many times the pods are restarted when the containers in them are re-created. You might happen to catch errors in the dashboard, indicating that the health check caught a problem. Give it a few seconds and refresh again. You see the number of restarts changes for each pod.
+
+3. Feel free to explore the dashboard a bit.
+
+## Roll Back Apps
+1. Imagine you identified a defect with the version 2 of your application! Let's undo this latest rollout. You can do so with the `kubectl rollout` command. Let's try that now:
+
+    ```
+    kubectl rollout undo deployment/hello-world
+    ```
+
+2. You can watch the status with the following command:
+
+    ```
+    kubectl rollout status deployment/hello-world
+    ```
+
+## Clean up
+1. Let's clean up the hello-world deployment and service.
+    
+    ```
+    kubectl delete deployment hello-world
+    kubectl delete service hello-world
+    ```
 
 ## Check the health of apps
 
@@ -176,7 +215,7 @@ Also, Kubernetes uses readiness checks to know when a container is ready to star
 
 In this example, we have defined a HTTP liveness probe to check health of the container every five seconds. For the first 10-15 seconds the `/healthz` returns a `200` response and will fail afterward. Kubernetes will automatically restart the service.  
 
-1. The `healthcheck.yml` file is a configuration script that combines a few steps from the previous lesson to create a deployment and a service at the same time. App developers can use these scripts when updates are made or to troubleshoot issues by re-creating the pods. We will need to update the line for `image` so that it includes your own image details. You stored these values in environment variables, so you could echo those environment variables to get your information.
+1. The `healthcheck.yml` is a configuration file that combines a few steps from the previous lesson to create a deployment and a service at the same time. App developers can use these files to quickly deploy applications to Kubernetes. We will need to update the line for `image` so that it includes your own image details. You stored these values in environment variables, so you could echo those environment variables to get your information.
 
     ```
     echo $MYREGISTRY
@@ -184,7 +223,7 @@ In this example, we have defined a HTTP liveness probe to check health of the co
     echo $MYPROJECT
     ```
 
-2. To edit the file you need to click the pencil icon and edit the file at `kube-code-camp/exercise-3/healthcheck.yml`. You will update `<registry>/<namespace>/<unique_appname>:2` to your own value, which should look something like `de.icr.io/code-camp/bmv-app-123:2`. Save the file.
+2. To edit the file you need to click the pencil icon and click on **Files** on the left. Find and edit the file at `kube-code-camp/exercise-3/healthcheck.yml`. You will update `<registry>/<namespace>/<unique_appname>:2` to your own value, which should look something like `us.icr.io/code-camp/bmv-app-123:2`. Save the file.
 
     ![](../README_images/pencil.png)
 
@@ -207,63 +246,36 @@ In this example, we have defined a HTTP liveness probe to check health of the co
    kubectl apply -f healthcheck.yml
    ```
 
-6. Check out the new pods that were created.
+6. Check out the new deployments and pods that were created.
 
     ```
-    kubectl get pods
+    kubectl get deployments,pods
     ```
 
-7. Open a browser and check out the app. To form the URL, combine the public IP with the NodePort that was specified in the configuration script. To get the public IP address for the worker node:
+7. Open a browser and check out the app. To form the URL, combine the worker public IP you got in the last exercise with the NodePort that was specified in the configuration file. To get the public IP address for the worker node again:
 
     ```
     ibmcloud ks workers $MYCLUSTER
     ```
 
-    In a browser, go to `IP:30072/healthz`, and you'll see a success message. If you do not see this text, don't worry. This app is designed to go up and down.
+    In a browser, go to `WORKER_IP:30072/healthz`, and you'll see a success or error message. If you do not see this text, don't worry. This app is designed to go up and down.
 
-    For the first 10 - 15 seconds, a 200 message is returned, so you know that the app is running successfully. After those 15 seconds, a timeout message is displayed, as is designed in the app.
+    For the first 10 - 15 seconds, a 200 message is returned, so you know that the app is running successfully. After those 15 seconds, the application is designed to show a timeout message. This will cause the health check to fail.
 
-## Launch the Kubernetes Dashboard
-
-1. Go back to your clusters detail page in the IBM Cloud UI. If you don't still have this open, you can go the [clusters](https://cloud.ibm.com/kubernetes/clusters/) page and select your cluster.
-
-2. Click the Kubernetes Dashboard button.
-
-    ![](../README_images/kube-dashboard.png)
-
-
-## Explore the Kubernetes Dashboard
-
-1. In the **Workloads** tab, you can see the resources that you created. From this tab, you can continually refresh and see that the health check is working. 
-
-2. In the **Pods** section of the **Workloads** tab you can see how many times the pods are restarted when the containers in them are re-created. You might happen to catch errors in the dashboard, indicating that the health check caught a problem. Give it a few seconds and refresh again. You see the number of restarts changes for each pod.
-
-3. Feel free to explore the dashboard a bit.
-
-# Roll Back Apps
-1. If you decide that you want to undo your latest rollout, you can do so with the `kubectl rollout` command. Let's try that now:
-
-    ```
-    kubectl rollout undo deployment/hello-world
-    ```
-
-2. You can watch the status with the following command:
-
-    ```
-    kubectl rollout status deployment/hello-world
-    ```
+8. Run `kubectl get pods` after a couple of minutes. You'll see that when the application fails it's health check, Kuberentes will detect this failure and restart the pod. Look at the **RESTARTS** column.
+   ```
+   binaryram@cloudshell-1-867b4b75bd-9mzp4:~/kube-code-camp/exercise-3$ kubectl get pods
+   NAME                                  READY   STATUS    RESTARTS   AGE
+   hw-demo-deployment-6f94fdcd5d-6l7nk   1/1     Running   3          2m53s
+   hw-demo-deployment-6f94fdcd5d-d56pp   1/1     Running   2          2m53s
+   hw-demo-deployment-6f94fdcd5d-d66cp   1/1     Running   3          2m53s
+   ```
 
 ## Cleanup
 1. Ready to delete what you created before you continue? This time, you can use the same configuration script to delete both of the resources you created.
 
     ```
     kubectl delete -f healthcheck.yml
-    ```
-2. Let's also clean up the hello-world deployment and service we created in the previous lab.
-    
-    ```
-    kubectl delete deployment hello-world
-    kubectl delete service hello-world
     ```
 
 Congratulations! You deployed the second version of the app. You had to use fewer commands to get the app up and running, you learned how health check works, and you edited a deployment, which is great! You also learned how to undo a rollout and how to delete resources using a .yml file. Exercise 3 is now complete.

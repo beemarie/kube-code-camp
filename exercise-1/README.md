@@ -4,7 +4,7 @@
 
 For this lab, a hosted shell is provided for you with all the necessary tools installed. Use this web shell to perform the tasks in this lab.
 
-1. Using Chrome or Firefox, go to the [Cloud Shell](https://cloudshell-console-ikslab.us-south.cf.cloud.ibm.com/) and login using the Login button, using the password from the instructor. You may already be logged in, if so skip to the next step.
+1. Using Chrome or Firefox, [click here to go to the Cloud Shell](https://cloudshell-console-ikslab.us-south.cf.cloud.ibm.com/) and login using the Login button, using the same password provided by the instructor. You may already be logged in, if so skip to the next step.
 2. Using the account drop down, choose the `IBM` account.
 3. Click on the Terminal icon to launch your web shell.
 
@@ -19,9 +19,9 @@ Learn how to set the context for your cluster in your CLI. Every time you log in
     ibmcloud ks clusters
     ```
 
-    > Note: If no clusters are shown, make sure you are targeting the right region with `ibmcloud ks region-set`. Choose the same region that you chose when creating the cluster on the [Get Cluster](https://get-cluster.mybluemix.net/) page.
+    > Note: If no clusters are shown, make sure you are targeting the IBM account in the top right corner. 
 
-2. Export your cluster name as an environment variable:
+2. For convenience, export your cluster name as an environment variable.  
 
     ```shell
     export MYCLUSTER=<your_cluster_name>
@@ -33,18 +33,19 @@ Learn how to set the context for your cluster in your CLI. Every time you log in
     ibmcloud ks cluster-get $MYCLUSTER
     ```
 
-4. Download the configuration file and certificates for your cluster using the `cluster-config` command.
+4. Download the configuration file and certificates for your cluster using the `cluster-config` command. This downloads the necessary credentials for you to access your cluster.
 
     ```shell
     ibmcloud ks cluster-config $MYCLUSTER
     ```
 
-5. Copy and paste the output command from the previous step to set the `KUBECONFIG` environment variable and configure your CLI to run `kubectl` commands against your cluster.
+5. The previous command should output an export command. *Copy this export line and paste it in to the prompt.* This will set the `KUBECONFIG` environment variable and configure your `kubectl` CLI to run commands against your cluster.
 
     Example:
     ```shell
     export KUBECONFIG=/Users...
     ```
+![](../README_images/copy-paste-export.png)
 
 6. Validate access to your cluster by viewing the nodes in the cluster.
 
