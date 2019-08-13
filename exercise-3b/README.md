@@ -13,8 +13,8 @@ For each Object that we create we need to provide the apiVersion we are using to
 Consider the following deployment configuration for the hello world application
 
 hello-world-deployment.yaml
-    
-    ```yaml
+
+```yaml
     apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -37,26 +37,31 @@ hello-world-deployment.yaml
             ports:
             - name: http-server
               containerPort: 8080
-      ```
+```
 
 The above configuration file create a deployment object named 'hello-world' with a pod containing a single container running the image. Also the configuration specifies replicas set to 3 and Kubernetes tries to make sure that at least three active pods are running at all times.
 
 1. Change directories to exercise 3b.
-  ```
+
+```bash
   cd ../exercise-3b
-  ```
+```
 
 1. Edit the hello-world-deployment file to include correct values for the image name -- based on registry, namespace, and project.  Remember, to edit the file you need to click the pencil icon and edit the file at `kube-code-camp/exercise-3b/hello-world-deployment.yml`. You will update `<registry>/<namespace>/<unique_appname>:1` to your image name. The line should look something like `us.icr.io/code-camp/bmv-app-123:1`. Save the file.
 
-1. Create the hello world deployment. To create a Deployment using this configuration file we use the following command:
+3. Create the hello world deployment. To create a Deployment using this configuration file we use the following command:
 
-  ```
+  ```bash
   kubectl create -f hello-world-deployment.yml
   ```
 
-2. We can then list the pods it created by listing all pods that have a label of "app" with a value of "hello-world". This matches the labels defined above in the yaml file in the spec.template.metadata.labels section.
-
+  ```bash
+  deployment "hello-world" created  
   ```
+
+4. We can then list the pods it created by listing all pods that have a label of "app" with a value of "hello-world". This matches the labels defined above in the yaml file in the spec.template.metadata.labels section.
+
+  ```bash
   kubectl get pods -l app=hello-world
   ```
 
@@ -64,7 +69,7 @@ The above configuration file create a deployment object named 'hello-world' with
 
 1. When you change the number of replicas in the configuration, Kubernetes will try to add, or remove, pods from the system to match your request. You can make these modifications by using the following command:
 
-  ```
+  ```bash
   kubectl edit deployment hello-world
   ```
 
@@ -76,9 +81,10 @@ The above configuration file create a deployment object named 'hello-world' with
 
   You can also edit the deployment file we used to create the Deployment to make changes. You should use the following command to make the change effective when you edit the deployment locally. Run the `kubectl apply` command to set the replicas back to 3.
 
-  ```
+```bash
   kubectl apply -f hello-world-deployment.yml
-  ```
+```
+
   This will ask Kubernetes to "diff" our yaml file with the current state of the Deployment and apply just those changes.
 
 1. Run `kubectl get pods` to see that there are now 3 pods.
@@ -89,7 +95,7 @@ We can now define a Service object to expose the deployment to external clients.
 
 1. We can now define a Service object to expose the deployment to external clients.
 
-  ```
+  ```bash
   apiVersion: v1
   kind: Service
   metadata:
@@ -103,38 +109,41 @@ We can now define a Service object to expose the deployment to external clients.
     ports:
     - protocol: TCP
       port: 8080
-      nodePort: 30073      
+      nodePort: 30073
   ```
 
 The above configuration creates a Service resource named hello-world. A Service can be used to create a network path for incoming traffic to your running application. In this case, we are setting up a route from port 3000 on the cluster to the "http-server" port on our app, which is port 3000 per the Deployment container spec.
 
 1. Let us now create the hello-world service using the same type of command we used when we created the Deployment:
-  ```
+
+  ```bash
   kubectl create -f hello-world-service.yml
   ```
 
 1. Let's see our pods being created:
-  ```
+
+  ```bash
   kubectl get pods
   ```
 
 1. Let's test the hello-world app:
 
-  ```
+  ```bash
   curl $WORKER_IP:30073
   ```
 
 ## Clean Up
 
 1. Let's also clean up the hello-world deployment and service we just created.
-  ```
+
+  ```bash
   kubectl delete -f hello-world-deployment.yml
   kubectl delete -f hello-world-service.yml
   ```
 
 2. Finally, let's clean up the images from the registry.
 
-  ```
+  ```bash
   ibmcloud cr image-rm $MYREGISTRY/$MYNAMESPACE/$MYPROJECT:2
   ibmcloud cr image-rm $MYREGISTRY/$MYNAMESPACE/$MYPROJECT:1
   ```

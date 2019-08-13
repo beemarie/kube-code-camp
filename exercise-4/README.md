@@ -3,9 +3,10 @@
 In this lab, set up an application to leverage the Watson Text To Speech service. 
 
 # Update the credentials.json file
+
 1. Change to the Excercise 4 directory:
 
-    ```
+    ```bash
     cd ../exercise-4
     ```
 
@@ -13,7 +14,7 @@ In this lab, set up an application to leverage the Watson Text To Speech service
 
 3. Create a Kubernetes Secret from on the credentials stored in this file.
 
-    ```
+    ```bash
     kubectl create secret generic apikey --from-file=./watson/credentials.json 
     ```
 4. Run `kubectl get secret` to see your secret called `apikey`
@@ -23,13 +24,13 @@ In this lab, set up an application to leverage the Watson Text To Speech service
 
 1. Create a unique application name for the watson app you're about to build. Something like `bmv-watson-1111`
 
-    ```
+    ```bash
     export MYWATSONAPP=<your_unique_name>
     ```
 
 2. Build the image, and push it to the IBM Cloud Container Registry using the `ibmcloud cr build` command.
 
-   ```
+   ```bash
    ibmcloud cr build -t $MYREGISTRY/$MYNAMESPACE/$MYWATSONAPP ./watson
    ```
 3. Run `ibmcloud cr images` and find your new image. You will need the image name in the next step.
@@ -65,13 +66,13 @@ The yaml file has everything we need defined. We simply give this file to kubect
 
 1. Create the deployment, pods and services making up your application using the .yml file.
 
-   ```
-   kubectl apply -f watson-deployment.yml
+   ```bash
+   kubectl create -f watson-deployment.yml
    ```
 1. You can open the Kubernetes dashboard and explore all the new objects created or use the following commands.
 
-   ```
-   kubectl get pods,deployments,services
+   ```bash
+   kubectl get pods
    ```
 
 ## Expose this application to the public internet using the IKS Ingress ALB
@@ -83,7 +84,7 @@ Standard clusters on IKS come with an IBM-provided domain. This gives you a bett
 
 1. Get the Ingress information for your cluster
 
-    ```
+    ```bash
     ibmcloud ks cluster-get $MYCLUSTER
     ```
     Example output:
@@ -123,7 +124,7 @@ Standard clusters on IKS come with an IBM-provided domain. This gives you a bett
     
 4. Clean up the deployment, pods, and services you created:
 
-    ```
+    ```bash
     kubectl delete -f watson-deployment.yml
     ```
 5. Clean up the Ingress you created:
