@@ -1,30 +1,35 @@
 # Deploy an application with IBM Watson services
 
-In this section, you will deploy an application that leverages the Watson Speech To Text service. 
+In this section, you will deploy an application that leverages the Watson Speech To Text service.
 
 ## Create the Watson Speech To Text Service (Skip if the Watson API key is provided for you)
 In this section, you will create the Watson service in your own account and get the service credentials.
 
-1. Go to cloud.ibm.com and using the account switcher drop down, switch to your own Account. 
+1. Go to cloud.ibm.com and using the account switcher drop down, switch to your own Account.
 2. Click on the **Catalog**, search for **Speech To Text** service and **Create**
 3. Click on **Service Credentials** on the left
-4. Then, click on **View Credentials**
+4. Click the dropdown arrow on the credentials to expand it.
 5. Take note of the `apikey` value. You will need this key in the next section
 
 ## Update the credentials.json file
-1. Change to the Excercise 4 directory:
+1. Change to the Exercise 4 directory:
 
     ```
     cd ../exercise-4
     ```
 
-2. Edit the credentials.json file found in `kube-code-camp/exercise-4/watson/credentials.json`. Remember that to edit this file, you need to click the pencil icon, 
-3. Update the `apikey` value with the value from the previous section and then save the file. 
-   
+2. Edit the credentials.json file found in `watson/credentials.json`.
+
+  ```
+  nano watson/credentials.json
+  ```
+
+3. Update the `apikey` value with the value from the previous section and then save the file.
+
 4. Create a Kubernetes Secret from on the credentials stored in this file.
 
     ```
-    kubectl create secret generic apikey --from-file=./watson/credentials.json 
+    kubectl create secret generic apikey --from-file=./watson/credentials.json
     ```
 5. Run `kubectl get secret` to see your secret called `apikey`
 
@@ -42,10 +47,19 @@ In this section, you will create the Watson service in your own account and get 
    ```
    ibmcloud cr build -t $MYREGISTRY/$MYNAMESPACE/$MYWATSONAPP ./watson
    ```
-3. Run `ibmcloud cr images` and find your new image. You will need the image name in the next step.
+3. List images to find your new image. You will need the image name in the next step.
 
-3. Edit the watson-deployment.yml file and update the image tag with the registry path to the image you just created. Remember, to update a file click the pencil icon, find the file at `kube-code-camp/exercise-4/watson-deployment.yml`. Remember to save once you've edited it.
+  ```
+  ibmcloud cr images
+  ```
 
+3. Edit the watson-deployment.yml file and update the image tag with the registry path to the image you just created.
+
+  ```
+  nano watson-deployment.yml
+  ```
+
+  Here is the relevant part for you to edit:
     ```yml
     spec:
       containers:
@@ -108,21 +122,28 @@ Standard clusters on IKS come with an IBM-provided domain. This gives you a bett
     Ingress Secret:                 mydemocluster
     ...
     ```
-    
+
 2. Note the `Ingress Subdomain` and `Ingress Secret` values. You'll need this in the next step.
-3. In `watson-ingress.yaml`, update the three locations marked `<Ingress Subdomain>` and `<Ingress Secret>`. Remember, to update a file click the pencil icon, find the file at `kube-code-camp/exercise-4/watson-ingress.yaml`. Remember to save once you've edited it.
+
+3. In `watson-ingress.yaml`, update the three locations marked `<Ingress Subdomain>` and `<Ingress Secret>`.
+
+  ```
+  nano watson-ingress.yaml
+  ```
+
+  Here is the relevant portion you need to edit:
+  ```
+  spec:
+    tls:
+    - hosts:
+      - watson.<Ingress Subdomain>
+      secretName: <Ingress Secret>
+    rules:
+    - host: watson.<Ingress Subdomain>
     ```
-    spec:
-      tls:
-      - hosts:
-        - watson.<Ingress Subdomain>
-        secretName: <Ingress Secret>
-      rules:
-      - host: watson.<Ingress Subdomain>
-      ```
-    
+
     ![](../README_images/watson-ingress.png)
-    
+
 4. Apply this yaml to your cluster.
     ```
     kubectl apply -f watson-ingress.yaml
@@ -131,7 +152,7 @@ Standard clusters on IKS come with an IBM-provided domain. This gives you a bett
 
 
 ![](../README_images/watson-stt.png)
-    
+
 You should be able to click the **Record** button and start speaking into your microphone. Watch the text get trascribed live!
 
 ## Clean up
@@ -146,5 +167,7 @@ You should be able to click the **Record** button and start speaking into your m
  ```
  kubectl delete -f watson-ingress.yaml
  ```
+
+3. If you created a Watson Speech to Text service at the beginning of this exercise, return to the browser tab where it is open. Click `Actions > Delete Service` and then click 'Ok' to delete the service.
 
 Continue on to [Exercise 5](../exercise-5/README.md)

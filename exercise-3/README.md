@@ -11,17 +11,16 @@ A *replica* is how Kubernetes accomplishes scaling out a deployment. A replica i
 1. `kubectl` provides a `scale` subcommand to change the size of an
    existing deployment. Let's us it to go from our single running
    instance to 10 instances.
-   
-   ``` console 
+
+   ```
    kubectl scale --replicas=10 deployment hello-world
-   deployment "hello-world" scaled
    ```
 
     Kubernetes will now act according to the desired state model, and attempt to make true the condition of 10 replicas. It will do this
     by starting new pods with the same configuration.
 
 2. Let's see your changes being rolled out:
-    
+
     ```
     kubectl rollout status deployment/hello-world
     ```
@@ -43,7 +42,7 @@ A *replica* is how Kubernetes accomplishes scaling out a deployment. A replica i
     deployment "hello-world" successfully rolled out
     ```
 
-5. Once the rollout has finished, ensure your pods are running by using: 
+5. Once the rollout has finished, ensure your pods are running by using:
 
     ```
     kubectl get pods
@@ -66,10 +65,10 @@ A *replica* is how Kubernetes accomplishes scaling out a deployment. A replica i
     hello-world-562211614-zksw3   1/1       Running   0          2m
     hello-world-562211614-zsp0j   1/1       Running   0          2m
     ```
-   
-**Tip:** The above step increases the number of replicas of your container within your cluster. Another way to improve availability is to grow your cluster by [adding nodes and regions](https://cloud.ibm.com/docs/containers?topic=containers-add_workers) to your cluster, as shown in the following diagram: 
 
-![HA with more clusters and regions](../images/cluster_ha_roadmap.png) 
+**Tip:** The above step increases the number of replicas of your container within your cluster. Another way to improve availability is to grow your cluster by [adding nodes and regions](https://cloud.ibm.com/docs/containers?topic=containers-add_workers) to your cluster, as shown in the following diagram:
+
+![HA with more clusters and regions](../images/cluster_ha_roadmap.png)
 
 ## Update Apps
 
@@ -101,7 +100,15 @@ To update:
     kubectl set image deployment/hello-world $MYPROJECT=$MYREGISTRY/$MYNAMESPACE/$MYPROJECT:2
     ```
 
-2. Run `kubectl rollout status deployment/hello-world` or `kubectl get replicasets` to check the status of the rollout. The rollout might occur so quickly that the following messages might _not_ display:
+2. Check the rollout status with one (or both) of the two commands below. The rollout might occur so quickly that the following messages might _not_ display.
+
+   ```
+   kubectl rollout status deployment/hello-world
+   ```
+
+   ```
+   kubectl get replicasets
+   ```
 
   Expected Output:
    ```
@@ -178,7 +185,7 @@ Congratulations - You just updated your app with a new version!
 
 ## Explore the Kubernetes Dashboard
 
-1. In the **Workloads** tab, you can see the resources that you created. From this tab, you can continually refresh and see that the health check is working. 
+1. In the **Workloads** tab, you can see the resources that you created. From this tab, you can continually refresh and see that the health check is working.
 
 2. In the **Pods** section of the **Workloads** tab you can see how many times the pods are restarted when the containers in them are re-created. You might happen to catch errors in the dashboard, indicating that the health check caught a problem. Give it a few seconds and refresh again. You see the number of restarts changes for each pod.
 
@@ -199,7 +206,7 @@ Congratulations - You just updated your app with a new version!
 
 ## Clean up
 1. Let's clean up the hello-world deployment and service.
-    
+
     ```
     kubectl delete deployment hello-world
     kubectl delete service hello-world
@@ -211,7 +218,7 @@ Kubernetes uses availability checks (liveness probes) to know when to restart a 
 
 Also, Kubernetes uses readiness checks to know when a container is ready to start accepting traffic. A pod is considered ready when all of its containers are ready. One use of this check is to control which pods are used as backends for services. When a pod is not ready, it is removed from load balancers.
 
-In this example, we have defined a HTTP liveness probe to check health of the container every five seconds. For the first 10-15 seconds the `/healthz` returns a `200` response and will fail afterward. Kubernetes will automatically restart the service.  
+In this example, we have defined a HTTP liveness probe to check health of the container every five seconds. For the first 10-15 seconds the `/healthz` returns a `200` response and will fail afterward. Kubernetes will automatically restart the service.
 
 1. The `my-deploy-with-health-check.yaml` is a configuration file that combines a few steps from the previous lesson to create a deployment and a service at the same time. App developers can use these files to quickly deploy applications to Kubernetes. We will need to replace some variables in this file with your values
 
@@ -255,9 +262,14 @@ In this example, we have defined a HTTP liveness probe to check health of the co
 
     For the first 10 - 15 seconds, a 200 message is returned, so you know that the app is running successfully. After those 15 seconds, the application is designed to show a timeout message. This will cause the health check to fail.
 
-7. Run `kubectl get pods` after a couple of minutes. You'll see that when the application fails it's health check, Kuberentes will detect this failure and restart the pod. Look at the **RESTARTS** column.
+7. List the pods after a couple of minutes. You'll see that when the application fails it's health check, Kuberentes will detect this failure and restart the pod.
+
    ```
-   binaryram@cloudshell-1-867b4b75bd-9mzp4:~/kube-code-camp/exercise-3$ kubectl get pods
+   kubectl get pods
+   ```
+
+   Look at the **RESTARTS** column in the output.
+   ```
    NAME                                  READY   STATUS    RESTARTS   AGE
    hw-demo-deployment-6f94fdcd5d-6l7nk   1/1     Running   3          2m53s
    hw-demo-deployment-6f94fdcd5d-d56pp   1/1     Running   2          2m53s

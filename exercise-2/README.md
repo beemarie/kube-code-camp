@@ -7,7 +7,7 @@ Learn how to push an image of an application to IBM Cloud Container Registry and
 To push an image, we first must have an image to push. We have
 prepared several `Dockerfile`s in this repository that will create the
 images. We will be running the images, and creating new ones, in the
-later labs. 
+later labs.
 
 This lab uses the Container Registry built in to IBM Cloud, but the
 image can be created and uploaded to any standard Docker registry to
@@ -19,13 +19,13 @@ which your cluster has access.
     git clone https://github.com/beemarie/kube-code-camp --depth 1
     ```
 
-2. Change directory to Exercise 2: 
+2. Change directory to Exercise 2:
 
    ```
    cd kube-code-camp/exercise-2
    ```
 
-3. Take a look at the `app.js` and the `Dockerfile` files to see the application source and the image we are about to build. . 
+3. Take a look at the `app.js` and the `Dockerfile` files to see the application source and the image we are about to build. .
    ```
    cat app.js
    cat Dockerfile
@@ -47,13 +47,13 @@ which your cluster has access.
     export MYNAMESPACE=ikslab-users
     export MYREGISTRY=us.icr.io
     ```
-   
+
 7. Build and tag (`-t`) the docker image and then push it to the IBM Cloud Container Registry, using the `ibmcloud cr build` command:
     ```
     ibmcloud cr build . -t $MYREGISTRY/$MYNAMESPACE/$MYPROJECT:1
     ```
 
-8.  Verify the image is built: 
+8.  Verify the image is built:
 
    ```
    ibmcloud cr images
@@ -64,16 +64,23 @@ This is your image in the IBM Cloud Container Registry. Next, you will reference
 
 ## Deploy your application
 
-1. Start by running your image as a deployment: 
+1. Start by running your image as a deployment:
 
    ```
    kubectl create deployment hello-world --image=$MYREGISTRY/$MYNAMESPACE/$MYPROJECT:1
    ```
-2. Run `kubectl get deployments` to see the Deployment resource you just created.
-3. Run `kubectl get pods` to check the Status of your pods.
+2. List the deployments to see the resource you just created.
 
-   You should see output similar to the following:
-   
+   ```
+   kubectl get deployments
+   ```
+3. List the pods to check the status of your pods.
+   ```
+   kubectl get pods
+   ```
+
+  You should see output similar to the following:
+
    ```
    kubectl get pods
    NAME                          READY     STATUS              RESTARTS   AGE
@@ -90,7 +97,7 @@ There are several ways to depose your application depending on if it is for deve
     kubectl expose deployment/hello-world --type="NodePort" --port=8080
     ```
 
-1. To find the port used on that worker node, examine your new service: 
+1. To find the port used on that worker node, examine your new service:
 
     ```
     kubectl describe service hello-world
@@ -119,7 +126,7 @@ There are several ways to depose your application depending on if it is for deve
     ```
     curl $WORKER_IP:$NODEPORT
     ```
-    
+
     If you see something like `Hello world from hello-world-86959dc89b-r6jjx! Your app is up and running in a cluster!` you're done with this exercise!
 
 In this exercise, you built a docker image from a dockerfile. You then pushed that image to the IBM Cloud Container Registry. Finally, you deployed your application to Kubernetes, using the image stored in the container registry.

@@ -13,7 +13,7 @@ For each Object that we create we need to provide the apiVersion we are using to
 Consider the following deployment configuration for the hello world application
 
 hello-world-deployment.yaml
-    
+
     ```yaml
     apiVersion: apps/v1
     kind: Deployment
@@ -79,16 +79,24 @@ The above configuration file create a deployment object named 'hello-world' with
 
 1. Try editing `replicas` to 4, under the `spec` section, near the top. Use Ctrl-X to exit, press Y to save and hit Enter.
 
-1. If you run `kubectl get pods`, you should see that there are now 4 pods.
+1. List the pods and you should see that there are now 4 pods.
 
-  You can also edit the deployment file we used to create the Deployment to make changes. You should use the following command to make the change effective when you edit the deployment locally. Run the `kubectl apply` command to set the replicas back to 3.
+  ```
+  kubectl get pods
+  ```
+
+  To make changes, you can also edit the deployment file we used to create the Deployment. Then those changes need to be applied. Apply the current configuration to set the replicas back to three.
 
   ```
   kubectl apply -f my-hello-world-deployment.yaml
   ```
   This will ask Kubernetes to "diff" our yaml file with the current state of the Deployment and apply just those changes.
 
-1. Run `kubectl get pods` to see that there are now 3 pods.
+1. List the pods to see that there are now three.
+
+  ```
+  kubectl get pods
+  ```
 
 ## Create a Service
 
@@ -110,7 +118,7 @@ We can now define a Service object to expose the deployment to external clients.
     ports:
     - protocol: TCP
       port: 8080
-      nodePort: 30073      
+      nodePort: 30073
   ```
 
 The above configuration creates a Service resource named hello-world. A Service can be used to create a network path for incoming traffic to your running application. In this case, we are setting up a route from port 3000 on the cluster to the "http-server" port on our app, which is port 3000 per the Deployment container spec.
