@@ -31,8 +31,10 @@ In this section, you will create the Watson service in your own account and get 
     ```
     kubectl create secret generic apikey --from-file=./watson/credentials.json
     ```
-5. Run `kubectl get secret` to see your secret called `apikey`
-
+5. List secrets to see your secret called `apikey`.
+  ```
+  kubectl get secret
+  ```
 
 ## Build the image for the Watson Speech to Text application
 
