@@ -107,31 +107,6 @@ kubectl --token=$TRAVIS_KUBE_TOKEN get deployments -n team-a
 kubectl --token=$JENKINS_KUBE_TOKEN get deployments -n team-b
 ```
 
-## Using our accounts
-
-1. Now we can test deploying some apps just as our pipeline tools would do so in real life.
-
-```
-kubectl --token=$TRAVIS_KUBE_TOKEN -n team-a run hello-app --image=beemarie/hello-app:1.0 --replicas 3
-kubectl --token=$JENKINS_KUBE_TOKEN -n team-b run hello-app --image=beemarie/hello-app:1.0 --replicas 3
-```
-
-2. Let's see how our new deployments are doing
-
-```
-kubectl --token=$TRAVIS_KUBE_TOKEN -n team-a get deployments
-kubectl --token=$JENKINS_KUBE_TOKEN -n team-b get deployments
-```
-
-3. Let's see if we can get some more details on the new pods
-
-```
-kubectl --token=$TRAVIS_KUBE_TOKEN -n team-a get pods
-kubectl --token=$JENKINS_KUBE_TOKEN -n team-b get pods
-```
-
-This will fail as we have not provided our users authorization for management of pods. These are meant for pipeline tools, which really only need to manage the deployment artifacts, not the runtime components.
-
 ## Cleanup
 1. Clean up the two namespaces and the ClusterRole that you created.
 
