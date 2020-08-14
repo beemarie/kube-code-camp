@@ -44,7 +44,7 @@ which your cluster has access.
 
 6. A namespace has already been created in this container registry for use in the lab. Set the namespace variable as well as the registry environment variable.
     ```
-    export MYNAMESPACE=ikslab-users
+    export MYNAMESPACE=geico-users
     export MYREGISTRY=us.icr.io
     ```
 
