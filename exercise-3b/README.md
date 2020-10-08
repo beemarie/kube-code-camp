@@ -64,35 +64,22 @@ The above configuration file create a deployment object named 'hello-world' with
   ```
 
 ## Edit Configuration
+  To make changes, you can edit the deployment file we used to create the Deployment. Then those changes need to be applied.
 
-1. Set your kubectl editor to nano
-  ```
-  export KUBE_EDITOR="nano"
-  ```
-2. When you change the number of replicas in the configuration, Kubernetes will try to add, or remove, pods from the system to match your request. You can make these modifications by using the following command:
+1. Edit the deployment file. Find `replicas: 3` and change it to `replicas: 4`. Use Ctrl-X to exit, press Y to save and hit Enter.
 
   ```
-  kubectl edit deployment hello-world
+  nano my-hello-world-deployment.yaml
   ```
 
-  This will retrieve the latest configuration for the Deployment from the Kubernetes server and then load it into an editor for you. You'll notice that there are a lot more fields in this version than the original yaml file we used. This is because it contains all of the properties about the Deployment that Kubernetes knows about, not just the ones we chose to specify when we create it. Also notice that it now contains the status section mentioned previously.
-
-1. Try editing `replicas` to 4, under the `spec` section, near the top. Use Ctrl-X to exit, press Y to save and hit Enter.
-
-1. List the pods and you should see that there are now 4 pods.
-
-  ```
-  kubectl get pods
-  ```
-
-  To make changes, you can also edit the deployment file we used to create the Deployment. Then those changes need to be applied. Apply the current configuration to set the replicas back to three.
+1. Apply the current configuration to set the replicas to four.
 
   ```
   kubectl apply -f my-hello-world-deployment.yaml
   ```
   This will ask Kubernetes to "diff" our yaml file with the current state of the Deployment and apply just those changes.
 
-1. List the pods to see that there are now three.
+1. List the pods to see that there are now four.
 
   ```
   kubectl get pods
@@ -121,7 +108,7 @@ We can now define a Service object to expose the deployment to external clients.
       nodePort: 30073
   ```
 
-The above configuration creates a Service resource named hello-world. A Service can be used to create a network path for incoming traffic to your running application. In this case, we are setting up a route from port 3000 on the cluster to the "http-server" port on our app, which is port 3000 per the Deployment container spec.
+The above configuration creates a Service resource named hello-world. A Service can be used to create a network path for incoming traffic to your running application. In this case, we are setting up a route from port 30073 on the cluster to the "http-server" port on our app, which is port 8080 per the Deployment container spec.
 
 1. Let us now create the hello-world service using the same type of command we used when we created the Deployment:
   ```

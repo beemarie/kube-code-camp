@@ -170,6 +170,11 @@ You should be able to click the **Record** button and start speaking into your m
  kubectl delete -f watson-ingress.yaml
  ```
 
-3. If you created a Watson Speech to Text service at the beginning of this exercise, return to the browser tab where it is open. Click `Actions > Delete Service` and then click 'Ok' to delete the service.
+3. Clean up the images in the registry.
+
+  ```
+  ibmcloud cr image-rm $MYREGISTRY/$MYNAMESPACE/$MYWATSONAPP
+  ```
+4. If you created a Watson Speech to Text service at the beginning of this exercise, return to the browser tab where it is open. Click `Actions > Delete Service` and then click 'Ok' to delete the service.
 
 Continue on to [Exercise 5](../exercise-5/README.md)

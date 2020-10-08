@@ -1,23 +1,11 @@
-# Get Started
-In this section, you will create your own IBM Cloud account, and then get access to a IBM Cloud Lab account which contains pre-provisioned clusters. Each lab attendee will be granted access to one cluster.
+# Accessing Your Cluster
+In this section you will access the cluster that has been granted to you. When you filled out the form to get access to a cluster, you were added to Alex Parker's IBM Cloud account and given access to a single cluster. These steps were given on that page, but in case you didn't follow them, here they are again.
 
-## Login with your IBM Cloud Account and Get Access to Your Cluster
-1. [Click here to go to the Lab Cluster Inviter](https://ikslab.mybluemix.net/) web page and enter your IBM ID (the email you used to sign up to IBM Cloud), the lab key from the instructor.
-
-    ![](../README_images/get-clusters.png)
-
-2. You will be added to the **1717629** Lab account and granted access to a cluster. Note the name of your cluster. It will be something like: `ikslab-01`
-3. Refresh your [IBM Cloud Dashboard](https://cloud.ibm.com)
-4. Switch to the **1717629** account by clicking on the account selection drop down in the top nav bar.
-5. Click on **Clusters** in the Resource Summary tile.
-
-    ![](../README_images/kubernetesResources.png)
-
-6. Click on the cluster that has been assigned to you.
-
-    ![](../README_images/dashboard.png)
-
-7. This page has some overview information about your cluster. Look around the various tabs.
+## Login to IBM Cloud Account and Access Your Cluster
+1. Log in to [this IBM Cloud account](https://cloud.ibm.com/resources?bss_account=91fceeba285eff9110af2355d0cd5cd3). In the account switcher at the top, you should see that you're targeting Alex Parker's account.
+2. Navigate to **Clusters**.
+3. Select your cluster. It should be named something like **benchprep-01**.
+4. This page has some overview information about your cluster. Look around the various tabs.
 
 You will use this cluster for this lab. Note the name of your cluster.
 
